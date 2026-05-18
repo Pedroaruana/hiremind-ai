@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<input type="file" id="fileInput" />
+<button onclick="upload()">Upload CV</button>
+
+<script>
+async function upload() {
+    const file = document.getElementById("fileInput").files[0];
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("http://127.0.0.1:8000/cv/upload-cv", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwZWRybyIsImV4cCI6MTc3OTA3MDQxOH0.fNG1Z07LRIMKrhpTGZLZJXcOeJJlwhLAKvzdNLHfiY4"
+        },
+        body: formData
+    });
+
+    const data = await response.json();
+    console.log(data);
+    alert(JSON.stringify(data));
+}
+</script>
+
+</body>
+</html>

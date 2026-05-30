@@ -39,13 +39,13 @@ README.md                → Documentação
 ## 📸 Screenshots
 
 ### 🔐 Tela de Login
-![Login](./backend/cv-dashboard/screenshots/login.png)
+![Login](./backend/cv-dashboard/screenshots/login1.png)
 
 ### 📄 Dashboard com CVs
 ![Dashboard](./backend/cv-dashboard/screenshots/dashboard.png)
 
 ### 🧠 Análise de Currículo
-![CV Analysis](./backend/cv-dashboard/screenshots/curriculos.png)
+![CV Analysis](./backend/cv-dashboard/screenshots/curriculo.png)
 
 
 🚀 Como Executar o Projeto

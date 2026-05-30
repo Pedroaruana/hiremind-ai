@@ -19,7 +19,7 @@ export default function Login() {
     setError("");
     try {
       const res = await axios.post(
-        `${API_URL}/auth/login`,
+        `${API_URL}/login`,
         new URLSearchParams({ username, password })
       );
       const token = res.data?.access_token;

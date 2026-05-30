@@ -1,0 +1,8 @@
+.env
+backend/.env
+test.db
+*.db
+uploads/
+backend/uploads/
+venv/
+backend/venv/

@@ -40,13 +40,26 @@ def analyze_cv(text: str):
 
     skills_db = {
         "react": "Frontend",
+        "vue": "Frontend",
+        "angular": "Frontend",
         "node": "Backend",
+        "express": "Backend",
+        "fastapi": "Backend",
+        "django": "Backend",
+        "flask": "Backend",
         "javascript": "Full Stack",
+        "typescript": "Full Stack",
         "python": "Backend",
         "java": "Backend",
         "sql": "Database",
+        "postgresql": "Database",
+        "mongodb": "Database",
+        "redis": "Database",
         "html": "Frontend",
-        "css": "Frontend"
+        "css": "Frontend",
+        "docker": "DevOps",
+        "git": "DevOps",
+        "aws": "DevOps",
     }
 
     found_skills = []
@@ -57,24 +70,81 @@ def analyze_cv(text: str):
             found_skills.append(skill)
             areas.add(area)
 
-    if len(found_skills) <= 2:
-        level = "Junior"
-    elif len(found_skills) <= 4:
-        level = "Pleno"
-    else:
-        level = "Senior"
+    # Nível baseado em palavras-chave de experiência
+    senior_keywords = ["senior", "sênior", "lead", "arquiteto", "architect", "tech lead"]
+    pleno_keywords = ["pleno", "mid", "analista", "analyst"]
+    junior_keywords = ["junior", "júnior", "estagiário", "trainee", "intern"]
 
-    if len(areas) == 1:
-        role = list(areas)[0]
-    elif "Frontend" in areas and "Backend" in areas:
-        role = "Full Stack"
+    if any(k in text_lower for k in senior_keywords) or len(found_skills) >= 7:
+        level = "Sênior"
+        base_score = 80
+    elif any(k in text_lower for k in pleno_keywords) or len(found_skills) >= 4:
+        level = "Pleno"
+        base_score = 60
+    elif any(k in text_lower for k in junior_keywords) or len(found_skills) >= 2:
+        level = "Júnior"
+        base_score = 40
     else:
-        role = "General Developer"
+        level = "Júnior"
+        base_score = 25
+
+    # Score final
+    skill_bonus = min(len(found_skills) * 2, 15)
+    has_contact = any(k in text_lower for k in ["email", "@", "linkedin", "github", "telefone", "phone"])
+    has_education = any(k in text_lower for k in ["universidade", "faculdade", "graduação", "bacharelado", "curso", "college", "university"])
+    contact_bonus = 3 if has_contact else 0
+    education_bonus = 5 if has_education else 0
+    score = min(100, base_score + skill_bonus + contact_bonus + education_bonus)
+
+    # Role
+    if "Frontend" in areas and "Backend" in areas:
+        role = "Full Stack"
+    elif "Frontend" in areas:
+        role = "Frontend Developer"
+    elif "Backend" in areas:
+        role = "Backend Developer"
+    elif "DevOps" in areas:
+        role = "DevOps Engineer"
+    else:
+        role = "Developer"
+
+    # Sub-scores
+    format_score = min(100, score + 8)
+    content_score = max(0, score - 5)
+    keyword_score = min(100, len(found_skills) * 6)
+
+    # Summary automático
+    summary = (
+        f"Candidato {level} com {len(found_skills)} habilidades técnicas identificadas. "
+        f"Perfil voltado para {role}. "
+        f"Score geral de {score}/100 baseado em habilidades, formação e completude do currículo."
+    )
+
+    # Dicas de melhoria
+    tips = []
+    if not has_contact:
+        tips.append("Adicione informações de contato como e-mail, LinkedIn ou GitHub.")
+    if not has_education:
+        tips.append("Inclua sua formação acadêmica ou cursos relevantes.")
+    if len(found_skills) < 5:
+        tips.append("Liste mais habilidades técnicas para aumentar sua visibilidade.")
+    if "github" not in text_lower:
+        tips.append("Adicione o link do seu GitHub para mostrar projetos práticos.")
+    if len(text) < 500:
+        tips.append("Seu currículo parece muito curto. Adicione mais detalhes sobre experiências.")
+    if not tips:
+        tips.append("Currículo bem estruturado! Mantenha-o atualizado regularmente.")
 
     return {
         "skills": found_skills,
         "level": level,
-        "role": role
+        "role": role,
+        "score": score,
+        "summary": summary,
+        "tips": tips,
+        "format_score": format_score,
+        "content_score": content_score,
+        "keyword_score": keyword_score,
     }
 
 

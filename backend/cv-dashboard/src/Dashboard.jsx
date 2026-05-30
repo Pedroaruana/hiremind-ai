@@ -161,11 +161,13 @@ export default function Dashboard() {
     }
   };
 
-  const subScores = [
-    { label: "Formato", v: Math.min(100, score + 8) },
-    { label: "Conteúdo", v: Math.max(0, score - 5) },
-    { label: "Keywords", v: Math.min(100, score + 15) },
-  ];
+  // Por isso:
+const subScores = [
+  { label: "Formato",   v: analysis.format_score  ?? Math.min(100, score + 8) },
+  { label: "Conteúdo",  v: analysis.content_score ?? Math.max(0, score - 5) },
+  { label: "Keywords",  v: analysis.keyword_score ?? Math.min(100, score + 15) },
+];
+
 
   return (
     <div style={{ minHeight:"100vh", background:"linear-gradient(135deg,#0f0c29 0%,#1a1040 40%,#0d1b3e 100%)", fontFamily:"'Sora',sans-serif", display:"flex", overflow:"hidden" }}>

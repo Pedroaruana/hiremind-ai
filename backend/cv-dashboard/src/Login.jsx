@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://hiremind-ai-production.up.railway.app";
+const API_URL = import.meta.env.VITE_API_URL || "https://hiremind-ai-tw8s.onrender.com";
 
 export default function Login() {
   const [mode, setMode] = useState("login"); // "login" | "register"

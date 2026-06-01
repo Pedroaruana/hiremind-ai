@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "https://hiremind-ai-production.up.railway.app";
+const API_URL = import.meta.env.VITE_API_URL || "https://hiremind-ai-tw8s.onrender.com";
 
 const SKILL_WIDTHS = [90, 75, 82, 68, 95, 71, 85, 78, 65, 88];
 const SKILL_COLORS = ["#8b5cf6","#3b82f6","#10b981","#f59e0b","#ec4899","#06b6d4"];

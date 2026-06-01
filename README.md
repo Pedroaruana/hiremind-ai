@@ -1,45 +1,72 @@
-🧠 HireMind AI
+# 🧠 HireMind AI
 
-Sistema full-stack que utiliza inteligência artificial para analisar currículos automaticamente, extrair habilidades e classificar candidatos por nível de experiência.
+> Sistema full-stack de análise de currículos com inteligência artificial.  
+> Faça upload do seu CV em PDF e receba um relatório completo com score, habilidades, dicas e muito mais.
 
-📌 Sobre o Projeto
+![Python](https://img.shields.io/badge/Python-3.13-blue?style=flat-square&logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688?style=flat-square&logo=fastapi)
+![React](https://img.shields.io/badge/React-Vite-61DAFB?style=flat-square&logo=react)
+![Railway](https://img.shields.io/badge/Backend-Railway-black?style=flat-square&logo=railway)
+![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat-square&logo=vercel)
 
-O HireMind AI permite que usuários façam upload de currículos em PDF e utiliza IA para extrair informações relevantes automaticamente, como:
+---
 
-🧩 Habilidades técnicas
-📊 Nível de experiência (Júnior, Pleno, Sênior)
-💼 Função sugerida (Frontend, Backend, Full Stack)
+## 🌐 Acesse o Projeto
 
-Os dados são processados e exibidos em um dashboard interativo.
+| | Link |
+|---|---|
+| 🔵 Frontend | https://hiremind-ai-fawn.vercel.app |
+| ⚙️ Backend | https://hiremind-ai-production.up.railway.app |
+| 📄 API Docs | https://hiremind-ai-production.up.railway.app/docs |
 
-⚙️ Funcionalidades
-📄 Upload de currículos em PDF
-🧠 Análise automática com IA
-🧩 Extração de habilidades técnicas
-📊 Classificação de nível profissional
-💼 Sugestão de função (role)
-🔐 Autenticação com JWT
-📡 API REST com FastAPI
-💻 Dashboard em React
-🛠️ Tecnologias Utilizadas
-Backend
-Python
-FastAPI
-JWT Authentication
-SQLite / PostgreSQL
-Frontend
-React (Vite)
-Axios
-JavaScript (ES6+)
-📂 Estrutura do Projeto
-backend/                 → API e lógica do sistema
-backend/cv-dashboard/    → Frontend (React)
-README.md                → Documentação
+---
+
+## 📌 Sobre o Projeto
+
+O **HireMind AI** permite que usuários façam upload de currículos em PDF e utilize IA para extrair informações relevantes automaticamente, como:
+
+- 🧩 Habilidades técnicas identificadas
+- 📊 Nível de experiência (Júnior, Pleno, Sênior)
+- 💼 Função sugerida (Frontend, Backend, Full Stack)
+- 💡 Dicas personalizadas de melhoria
+- 📈 Score geral do currículo (0–100)
+
+---
+
+## ⚙️ Funcionalidades
+
+- 📄 Upload de currículos em PDF
+- 🔐 Cadastro e login direto pelo site (sem etapas externas)
+- 🧠 Análise automática com IA
+- 🧩 Extração de habilidades técnicas
+- 📊 Classificação de nível profissional
+- 💡 Dicas personalizadas de melhoria
+- 📈 Score detalhado com sub-scores (Formato, Conteúdo, Keywords)
+- 💻 Dashboard interativo com sidebar
+
+---
+
+## 🛠️ Tecnologias
+
+**Backend**
+- Python 3.13
+- FastAPI
+- SQLAlchemy + PostgreSQL
+- JWT Authentication (python-jose)
+- Bcrypt (passlib)
+- pdfplumber
+
+**Frontend**
+- React + Vite
+- Axios
+- JavaScript (ES6+)
+
+---
 
 ## 📸 Screenshots
 
-### 🔐 Tela de Login
-![Login](./backend/cv-dashboard/screenshots/login1.png)
+### 🔐 Tela de Login / Cadastro
+![Login](./backend/cv-dashboard/screenshots/login2.png)
 
 ### 📄 Dashboard com CVs
 ![Dashboard](./backend/cv-dashboard/screenshots/dashboard.png)
@@ -47,45 +74,44 @@ README.md                → Documentação
 ### 🧠 Análise de Currículo
 ![CV Analysis](./backend/cv-dashboard/screenshots/curriculo.png)
 
+---
 
-🚀 Como Executar o Projeto
-1. Clonar o repositório
+## 🚀 Como Executar Localmente
+
+### 1. Clonar o repositório
+```bash
 git clone https://github.com/Pedroaruana/hiremind-ai.git
 cd hiremind-ai
-2. Rodar o Backend
+```
+
+### 2. Rodar o Backend
+```bash
 cd backend
 pip install -r requirements.txt
 uvicorn app.main:app --reload
+```
+> API disponível em: `http://localhost:8000`
 
-👉 Backend rodando em:
-https://hiremind-ai-production.up.railway.app
-
-3. Rodar o Frontend
+### 3. Rodar o Frontend
+```bash
 cd backend/cv-dashboard
 npm install
 npm run dev
+```
+> Frontend disponível em: `http://localhost:5173`
 
-👉 Frontend local:
-http://localhost:5173
+---
 
-👉 Frontend em produção:
-https://hiremind-ai-fawn.vercel.app/
+## 🔐 Como Usar
 
-🌐 Links do Projeto
-🔵 Frontend: https://hiremind-ai-fawn.vercel.app/
-⚙️ Backend: https://hiremind-ai-production.up.railway.app/
-📄 API Docs: https://hiremind-ai-production.up.railway.app/docs
-🔐 Autenticação
+1. Acesse o [frontend](https://hiremind-ai-fawn.vercel.app)
+2. Clique em **"Criar conta"** e cadastre-se
+3. Faça login com suas credenciais
+4. Clique em **"Enviar CV"** na barra lateral e selecione seu PDF
+5. Veja a análise completa do currículo no dashboard
 
-O sistema utiliza JWT:
+---
 
-Usuário faz login
-Token é armazenado no localStorage
+## 👨‍💻 Autor
 
-Token é enviado nas requisições:
-
-Authorization: Bearer <token>
-API retorna dados do usuário autenticado
-👨‍💻 Autor
-
-Projeto desenvolvido por Pedro.
+Desenvolvido por **Pedro**.

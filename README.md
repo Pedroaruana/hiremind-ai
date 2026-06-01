@@ -16,8 +16,8 @@
 | | Link |
 |---|---|
 | 🔵 Frontend | https://hiremind-ai-fawn.vercel.app |
-| ⚙️ Backend | https://hiremind-ai-production.up.railway.app |
-| 📄 API Docs | https://hiremind-ai-production.up.railway.app/docs |
+| ⚙️ Backend | https://hiremind-ai-tw8s.onrender.com |
+| 📄 API Docs | https://hiremind-ai-tw8s.onrender.com/docs |
 
 ---
 
@@ -91,6 +91,8 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 > API disponível em: `http://localhost:8000`
+
+> Em produção: `https://hiremind-ai-tw8s.onrender.com`
 
 ### 3. Rodar o Frontend
 ```bash

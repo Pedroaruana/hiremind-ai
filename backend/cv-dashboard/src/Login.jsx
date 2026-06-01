@@ -4,29 +4,32 @@ import axios from "axios";
 const API_URL = import.meta.env.VITE_API_URL || "https://hiremind-ai-production.up.railway.app";
 
 export default function Login() {
+  const [mode, setMode] = useState("login"); // "login" | "register"
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const switchMode = (next) => {
+    setMode(next);
+    setError("");
+    setSuccess("");
+    setUsername("");
+    setPassword("");
+    setConfirmPassword("");
+  };
+
   const handleLogin = async () => {
-    if (!username || !password) {
-      setError("Preencha todos os campos.");
-      return;
-    }
+    if (!username || !password) { setError("Preencha todos os campos."); return; }
     setLoading(true);
     setError("");
     try {
-      const res = await axios.post(
-        `${API_URL}/login`,
-        new URLSearchParams({ username, password })
-      );
+      const res = await axios.post(`${API_URL}/login`, new URLSearchParams({ username, password }));
       const token = res.data?.access_token;
-      if (!token) {
-        setError("Erro: token não recebido do servidor.");
-        return;
-      }
+      if (!token) { setError("Erro: token não recebido do servidor."); return; }
       localStorage.setItem("token", token);
       window.location.href = "/";
     } catch (err) {
@@ -37,19 +40,38 @@ export default function Login() {
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleLogin();
+  const handleRegister = async () => {
+    if (!username || !password || !confirmPassword) { setError("Preencha todos os campos."); return; }
+    if (password !== confirmPassword) { setError("As senhas não coincidem."); return; }
+    if (password.length < 6) { setError("A senha deve ter pelo menos 6 caracteres."); return; }
+    setLoading(true);
+    setError("");
+    try {
+      await axios.post(`${API_URL}/register`, { username, password });
+      setSuccess("Conta criada! Faça login para continuar.");
+      switchMode("login");
+    } catch (err) {
+      const msg = err.response?.data?.detail || "Erro ao criar conta.";
+      setError(typeof msg === "string" ? msg : JSON.stringify(msg));
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") mode === "login" ? handleLogin() : handleRegister();
+  };
+
+  const isLogin = mode === "login";
 
   return (
     <div style={styles.page}>
-      {/* Animated background blobs */}
       <div style={styles.blob1} />
       <div style={styles.blob2} />
       <div style={styles.blob3} />
 
       <div style={styles.card}>
-        {/* Logo / Brand */}
+        {/* Brand */}
         <div style={styles.brandRow}>
           <div style={styles.logoBox}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -62,10 +84,20 @@ export default function Login() {
           <span style={styles.brandBadge}>AI</span>
         </div>
 
-        <h1 style={styles.title}>Bem‑vindo de volta</h1>
-        <p style={styles.subtitle}>Analise currículos com inteligência artificial</p>
+        {/* Toggle tabs */}
+        <div style={styles.tabs}>
+          <button style={{ ...styles.tab, ...(isLogin ? styles.tabActive : {}) }} onClick={() => switchMode("login")}>
+            Entrar
+          </button>
+          <button style={{ ...styles.tab, ...(!isLogin ? styles.tabActive : {}) }} onClick={() => switchMode("register")}>
+            Criar conta
+          </button>
+        </div>
 
-        {/* Inputs */}
+        <h1 style={styles.title}>{isLogin ? "Bem‑vindo de volta" : "Crie sua conta"}</h1>
+        <p style={styles.subtitle}>{isLogin ? "Analise currículos com inteligência artificial" : "Comece a analisar currículos gratuitamente"}</p>
+
+        {/* Username */}
         <div style={styles.fieldGroup}>
           <label style={styles.label}>Usuário</label>
           <div style={styles.inputWrap}>
@@ -73,18 +105,12 @@ export default function Login() {
               <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.8"/>
               <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
             </svg>
-            <input
-              style={styles.input}
-              type="text"
-              placeholder="seu@email.com"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoComplete="username"
-            />
+            <input style={styles.input} type="text" placeholder="seu@email.com" value={username}
+              onChange={(e) => setUsername(e.target.value)} onKeyDown={handleKeyDown} autoComplete="username" />
           </div>
         </div>
 
+        {/* Password */}
         <div style={styles.fieldGroup}>
           <label style={styles.label}>Senha</label>
           <div style={styles.inputWrap}>
@@ -92,21 +118,9 @@ export default function Login() {
               <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.8"/>
               <path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
             </svg>
-            <input
-              style={styles.input}
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoComplete="current-password"
-            />
-            <button
-              style={styles.eyeBtn}
-              onClick={() => setShowPassword(!showPassword)}
-              tabIndex={-1}
-              type="button"
-            >
+            <input style={styles.input} type={showPassword ? "text" : "password"} placeholder="••••••••"
+              value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={handleKeyDown} autoComplete={isLogin ? "current-password" : "new-password"} />
+            <button style={styles.eyeBtn} onClick={() => setShowPassword(!showPassword)} tabIndex={-1} type="button">
               {showPassword ? (
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
@@ -123,6 +137,32 @@ export default function Login() {
           </div>
         </div>
 
+        {/* Confirm password (register only) */}
+        {!isLogin && (
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Confirmar senha</label>
+            <div style={styles.inputWrap}>
+              <svg style={styles.inputIcon} width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <rect x="5" y="11" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.8"/>
+                <path d="M8 11V7a4 4 0 018 0v4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+              </svg>
+              <input style={styles.input} type={showPassword ? "text" : "password"} placeholder="••••••••"
+                value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} onKeyDown={handleKeyDown} autoComplete="new-password" />
+            </div>
+          </div>
+        )}
+
+        {/* Success */}
+        {success && (
+          <div style={styles.successBox}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{flexShrink:0}}>
+              <circle cx="12" cy="12" r="10" stroke="#34d399" strokeWidth="1.8"/>
+              <path d="M8 12l3 3 5-5" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            {success}
+          </div>
+        )}
+
         {/* Error */}
         {error && (
           <div style={styles.errorBox}>
@@ -136,16 +176,11 @@ export default function Login() {
         )}
 
         {/* Button */}
-        <button
-          style={{ ...styles.btn, opacity: loading ? 0.7 : 1 }}
-          onClick={handleLogin}
-          disabled={loading}
-        >
-          {loading ? (
-            <span style={styles.spinner} />
-          ) : (
+        <button style={{ ...styles.btn, opacity: loading ? 0.7 : 1 }}
+          onClick={isLogin ? handleLogin : handleRegister} disabled={loading}>
+          {loading ? <span style={styles.spinner} /> : (
             <>
-              Entrar na plataforma
+              {isLogin ? "Entrar na plataforma" : "Criar conta"}
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -190,6 +225,40 @@ const styles = {
     position: "relative",
     overflow: "hidden",
     padding: "24px",
+  },
+  tabs: {
+    display: "flex",
+    background: "rgba(255,255,255,0.05)",
+    borderRadius: "12px",
+    padding: "4px",
+    marginBottom: "24px",
+    gap: "4px",
+  },
+  tab: {
+    flex: 1,
+    background: "transparent",
+    border: "none",
+    borderRadius: "8px",
+    color: "rgba(200,200,240,0.5)",
+    fontSize: "14px",
+    fontWeight: "500",
+    fontFamily: "'Sora', sans-serif",
+    padding: "9px",
+    cursor: "pointer",
+    transition: "all 0.2s",
+  },
+  tabActive: {
+    background: "rgba(139,92,246,0.2)",
+    color: "#a78bfa",
+    fontWeight: "600",
+  },
+  successBox: {
+    display: "flex", alignItems: "center", gap: "8px",
+    background: "rgba(52,211,153,0.1)",
+    border: "1px solid rgba(52,211,153,0.3)",
+    borderRadius: "10px",
+    color: "#6ee7b7", fontSize: "13px",
+    padding: "10px 14px", marginBottom: "16px",
   },
   blob1: {
     position: "absolute", top: "-80px", left: "-80px",

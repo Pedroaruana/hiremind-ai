@@ -1,28 +1,45 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import BaseModel
+from passlib.context import CryptContext
 from app.services.jwt_service import create_access_token
+from app.database.connection import SessionLocal
+from app.models.user_model import User
 
 router = APIRouter()
 
-users_db = {}
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+class RegisterRequest(BaseModel):
+    username: str
+    password: str
+
 
 @router.post("/register")
-def register(username: str, password: str):
-    users_db[username] = password
-    return {"message": "user created"}
+def register(body: RegisterRequest, db=Depends(get_db)):
+    existing = db.query(User).filter(User.username == body.username).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Usuário já existe.")
+    hashed = pwd_context.hash(body.password)
+    user = User(username=body.username, password=hashed)
+    db.add(user)
+    db.commit()
+    return {"message": "Usuário criado com sucesso."}
 
 
 @router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    username = form_data.username
-    password = form_data.password
-
-    if username not in users_db or users_db[username] != password:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    token = create_access_token({"sub": username})
-
-    return {
-        "access_token": token,
-        "token_type": "bearer"
-    }
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db=Depends(get_db)):
+    user = db.query(User).filter(User.username == form_data.username).first()
+    if not user or not pwd_context.verify(form_data.password, user.password):
+        raise HTTPException(status_code=401, detail="Usuário ou senha inválidos.")
+    token = create_access_token({"sub": user.username})
+    return {"access_token": token, "token_type": "bearer"}

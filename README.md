@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/Python-3.13-blue?style=flat-square&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688?style=flat-square&logo=fastapi)
 ![React](https://img.shields.io/badge/React-Vite-61DAFB?style=flat-square&logo=react)
-![Railway](https://img.shields.io/badge/Backend-Railway-black?style=flat-square&logo=railway)
+![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat-square&logo=render)
 ![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat-square&logo=vercel)
 
 ---
@@ -111,6 +111,30 @@ npm run dev
 3. Faça login com suas credenciais
 4. Clique em **"Enviar CV"** na barra lateral e selecione seu PDF
 5. Veja a análise completa do currículo no dashboard
+
+---
+
+## 📂 Estrutura do Projeto
+
+```
+hiremind-ai/
+├── frontend/               → React + Vite (interface do usuário)
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── Login.jsx
+│   │   └── Dashboard.jsx
+│   └── package.json
+├── backend/                → FastAPI (API e lógica)
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── routes/
+│   │   ├── models/
+│   │   ├── services/
+│   │   └── database/
+│   └── requirements.txt
+├── render.yaml
+└── README.md
+```
 
 ---
 

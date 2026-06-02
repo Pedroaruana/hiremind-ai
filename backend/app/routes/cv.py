@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Depends
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 import os
 import uuid
 import json
@@ -12,6 +12,11 @@ router = APIRouter()
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+MAX_FILE_SIZE_MB = 5
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+ALLOWED_CONTENT_TYPES = {"application/pdf"}
+ALLOWED_EXTENSIONS = {".pdf"}
 
 
 def get_db():
@@ -154,10 +159,23 @@ async def upload_cv(
     user = Depends(get_current_user),
     db = Depends(get_db)
 ):
-    file_id = str(uuid.uuid4())
-    file_path = f"{UPLOAD_DIR}/{file_id}.pdf"
+    # Validação de extensão
+    ext = os.path.splitext(file.filename or "")[-1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Apenas arquivos PDF são aceitos.")
+
+    # Validação de content-type
+    if file.content_type not in ALLOWED_CONTENT_TYPES:
+        raise HTTPException(status_code=400, detail="Tipo de arquivo inválido. Envie um PDF.")
 
     content = await file.read()
+
+    # Validação de tamanho
+    if len(content) > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(status_code=400, detail=f"Arquivo muito grande. Máximo: {MAX_FILE_SIZE_MB}MB.")
+
+    file_id = str(uuid.uuid4())
+    file_path = f"{UPLOAD_DIR}/{file_id}.pdf"
 
     with open(file_path, "wb") as f:
         f.write(content)
@@ -165,7 +183,8 @@ async def upload_cv(
     text = extract_text_from_pdf(file_path)
 
     if text.startswith("PDF_ERROR"):
-        return {"error": text}
+        os.remove(file_path)
+        raise HTTPException(status_code=422, detail="Não foi possível ler o PDF. Verifique o arquivo.")
 
     ai_result = analyze_cv(text)
 
@@ -177,18 +196,16 @@ async def upload_cv(
             ai_analysis=json.dumps(ai_result),
             user=user
         )
-
         db.add(cv)
         db.commit()
-
     except Exception as e:
         db.rollback()
-        return {"error": str(e)}
+        os.remove(file_path)
+        raise HTTPException(status_code=500, detail="Erro ao salvar o CV.")
 
     return {
-        "message": "CV saved successfully",
+        "message": "CV salvo com sucesso.",
         "file_id": file_id,
-        "user": user,
         "ai_analysis": ai_result
     }
 
@@ -203,7 +220,6 @@ def get_my_cvs(
     return [
         {
             "file_id": cv.id,
-            "file_path": cv.file_path,
             "ai_analysis": json.loads(cv.ai_analysis) if cv.ai_analysis else None
         }
         for cv in cvs

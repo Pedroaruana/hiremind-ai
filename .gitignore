@@ -3,7 +3,13 @@ node_modules/
 .venv/
 .venv-1/
 backend/.env
+frontend/.env
 backend/venv/
 backend/__pycache__/
 __pycache__/
 *.pyc
+*.db
+backend/uploads/
+backend/test_*.py
+backend/test*.html
+backend/Pedro.pdf

@@ -66,13 +66,13 @@ O **HireMind AI** permite que usuários façam upload de currículos em PDF e ut
 ## 📸 Screenshots
 
 ### 🔐 Tela de Login / Cadastro
-![Login](./backend/cv-dashboard/screenshots/login2.png)
+![Login](./frontend/screenshots/login2.png)
 
 ### 📄 Dashboard com CVs
-![Dashboard](./backend/cv-dashboard/screenshots/dashboard.png)
+![Dashboard](./frontend/screenshots/dashboard.png)
 
 ### 🧠 Análise de Currículo
-![CV Analysis](./backend/cv-dashboard/screenshots/curriculo.png)
+![CV Analysis](./frontend/screenshots/curriculo.png)
 
 ---
 
@@ -96,7 +96,7 @@ uvicorn app.main:app --reload
 
 ### 3. Rodar o Frontend
 ```bash
-cd backend/cv-dashboard
+cd frontend
 npm install
 npm run dev
 ```

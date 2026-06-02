@@ -13,3 +13,4 @@ backend/uploads/
 backend/test_*.py
 backend/test*.html
 backend/Pedro.pdf
+package-lock.json

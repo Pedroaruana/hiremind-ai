@@ -23,9 +23,16 @@ class RegisterRequest(BaseModel):
     username: str
     password: str
 
+    def validate_fields(self):
+        if len(self.username) < 3 or len(self.username) > 50:
+            raise HTTPException(status_code=400, detail="Usuário deve ter entre 3 e 50 caracteres.")
+        if len(self.password) < 6 or len(self.password) > 128:
+            raise HTTPException(status_code=400, detail="Senha deve ter entre 6 e 128 caracteres.")
+
 
 @router.post("/register")
 def register(body: RegisterRequest, db=Depends(get_db)):
+    body.validate_fields()
     existing = db.query(User).filter(User.username == body.username).first()
     if existing:
         raise HTTPException(status_code=400, detail="Usuário já existe.")

@@ -8,6 +8,7 @@
 ![React](https://img.shields.io/badge/React-Vite-61DAFB?style=flat-square&logo=react)
 ![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat-square&logo=render)
 ![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat-square&logo=vercel)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 ---
 

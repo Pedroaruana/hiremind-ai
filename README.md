@@ -19,6 +19,14 @@ Comecei esse projeto querendo entender como integrar IA com uma aplicação real
 
 O backend é uma API em FastAPI com autenticação JWT e banco PostgreSQL. O frontend é em React com um dashboard onde você vê todos os CVs analisados.
 
+## Desafios
+
+O maior ponto de virada foi o fluxo de autenticação. No início, o cadastro e login eram feitos direto pelo Swagger do FastAPI — o usuário tinha que abrir a documentação da API, registrar a conta por lá, copiar o token e só então conseguia usar o sistema. Funcionava, mas era horrível de usar.
+
+Decidi refazer isso do zero no frontend: criei as telas de login e cadastro em React, conectei com a API e fiz o token ser salvo automaticamente. Além de ficar muito mais usável, me fez entender melhor como JWT funciona na prática — como o token trafega, onde armazenar, como enviar no header de cada requisição.
+
+Outro ponto foi a organização do repositório. O frontend estava dentro da pasta `backend/`, o que não fazia sentido nenhum. Reestruturei tudo com `frontend/` e `backend/` separados na raiz, o que deixou o projeto muito mais legível.
+
 ## Funcionalidades
 
 - Upload de currículos em PDF

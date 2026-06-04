@@ -200,7 +200,7 @@ const subScores = [
         {/* Upload button */}
         {sidebarOpen && (
           <label style={{ display:"flex", alignItems:"center", gap:"8px", margin:"0 12px 12px", background:"rgba(139,92,246,0.08)", border:"1px dashed rgba(139,92,246,0.35)", borderRadius:"10px", color:"#a78bfa", fontSize:"13px", fontWeight:"500", padding:"10px 14px", cursor:"pointer" }}>
-            <input type="file" accept=".pdf,.doc,.docx" onChange={handleUpload} style={{ display:"none" }} />
+            <input type="file" accept=".pdf,application/pdf" onChange={handleUpload} style={{ display:"none" }} />
             {uploading
               ? <span style={{ width:"14px", height:"14px", border:"2px solid rgba(139,92,246,0.4)", borderTopColor:"#8b5cf6", borderRadius:"50%", display:"inline-block", animation:"spin 0.7s linear infinite" }} />
               : <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>

@@ -12,6 +12,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [slowWarning, setSlowWarning] = useState(false);
 
   const switchMode = (next) => {
     setMode(next);
@@ -26,6 +27,8 @@ export default function Login() {
     if (!username || !password) { setError("Preencha todos os campos."); return; }
     setLoading(true);
     setError("");
+    setSlowWarning(false);
+    const slowTimer = setTimeout(() => setSlowWarning(true), 5000);
     try {
       const res = await axios.post(`${API_URL}/login`, new URLSearchParams({ username, password }));
       const token = res.data?.access_token;
@@ -36,6 +39,8 @@ export default function Login() {
       const msg = err.response?.data?.detail || "Usuário ou senha inválidos.";
       setError(typeof msg === "string" ? msg : JSON.stringify(msg));
     } finally {
+      clearTimeout(slowTimer);
+      setSlowWarning(false);
       setLoading(false);
     }
   };
@@ -152,6 +157,17 @@ export default function Login() {
           </div>
         )}
 
+        {/* Slow server warning */}
+        {slowWarning && (
+          <div style={styles.slowBox}>
+            <span style={{ fontSize: "18px" }}>😴</span>
+            <div>
+              <p style={{ fontWeight: "600", marginBottom: "2px" }}>Servidor acordando...</p>
+              <p style={{ opacity: 0.7, fontSize: "12px" }}>O servidor entra em modo de espera quando inativo. Aguarde até 50 segundos.</p>
+            </div>
+          </div>
+        )}
+
         {/* Success */}
         {success && (
           <div style={styles.successBox}>
@@ -251,6 +267,15 @@ const styles = {
     background: "rgba(139,92,246,0.2)",
     color: "#a78bfa",
     fontWeight: "600",
+  },
+  slowBox: {
+    display: "flex", alignItems: "flex-start", gap: "12px",
+    background: "rgba(245,158,11,0.08)",
+    border: "1px solid rgba(245,158,11,0.25)",
+    borderRadius: "10px",
+    color: "#fbbf24", fontSize: "13px",
+    padding: "12px 14px", marginBottom: "16px",
+    lineHeight: "1.5",
   },
   successBox: {
     display: "flex", alignItems: "center", gap: "8px",

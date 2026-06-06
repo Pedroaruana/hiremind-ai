@@ -99,6 +99,7 @@ export default function Dashboard() {
   const [selectedId, setSelectedId] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const token = localStorage.getItem("token");
@@ -119,6 +120,23 @@ export default function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.reload();
+  };
+
+  const handleDelete = async () => {
+    if (!selectedId || deleting) return;
+    setDeleting(true);
+    try {
+      await axios.delete(`${API_URL}/cv/${selectedId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const updated = cvs.filter((c) => c.file_id !== selectedId);
+      setCvs(updated);
+      setSelectedId(updated.length > 0 ? updated[0].file_id : null);
+    } catch (_) {
+      // silently ignore
+    } finally {
+      setDeleting(false);
+    }
   };
 
   useEffect(() => {
@@ -270,6 +288,15 @@ const subScores = [
                   <p style={{ fontSize:"13px", color:"rgba(200,200,240,0.5)", marginTop:"2px" }}>{role}</p>
                 </div>
               </div>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                title="Deletar currículo"
+                style={{ display:"flex", alignItems:"center", gap:"6px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.2)", borderRadius:"8px", color:"rgba(239,68,68,0.7)", fontSize:"12px", padding:"7px 12px", cursor: deleting ? "not-allowed" : "pointer", opacity: deleting ? 0.5 : 1, fontFamily:"'Sora',sans-serif" }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                {deleting ? "Deletando..." : "Deletar"}
+              </button>
             </div>
 
             {/* Score + Summary */}

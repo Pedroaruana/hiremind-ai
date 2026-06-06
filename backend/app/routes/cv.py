@@ -224,3 +224,21 @@ def get_my_cvs(
         }
         for cv in cvs
     ]
+
+
+@router.delete("/{file_id}")
+def delete_cv(
+    file_id: str,
+    user = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    cv = db.query(CV).filter(CV.id == file_id, CV.user == user).first()
+    if not cv:
+        raise HTTPException(status_code=404, detail="CV não encontrado.")
+
+    if cv.file_path and os.path.exists(cv.file_path):
+        os.remove(cv.file_path)
+
+    db.delete(cv)
+    db.commit()
+    return {"message": "CV deletado com sucesso."}

@@ -64,12 +64,19 @@ function TipCard({ tip, index }) {
   );
 }
 
+function formatDate(iso) {
+  if (!iso) return null;
+  const d = new Date(iso);
+  return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
+}
+
 function CVItem({ cv, isActive, onClick }) {
   const analysis = cv.ai_analysis || {};
   const score = analysis.score || 0;
   const col = scoreColor(score);
   const role = analysis.role || analysis.cargo || analysis.position || "Cargo não identificado";
   const name = analysis.name || analysis.nome || cv.filename || `CV #${String(cv.file_id || "").slice(-4) || "0000"}`;
+  const date = formatDate(cv.created_at);
   return (
     <div
       onClick={onClick}
@@ -85,7 +92,9 @@ function CVItem({ cv, isActive, onClick }) {
         </div>
         <div style={{ flex:1, minWidth:0 }}>
           <div style={{ fontSize:"12px", fontWeight:"600", color:"#fff", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{name}</div>
-          <div style={{ fontSize:"10px", color:"rgba(200,200,240,0.4)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{role}</div>
+          <div style={{ fontSize:"10px", color:"rgba(200,200,240,0.4)", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
+            {role}{date && <span style={{ marginLeft:"6px", opacity:0.6 }}>· {date}</span>}
+          </div>
         </div>
         <div style={{ fontSize:"11px", fontWeight:"700", borderRadius:"6px", padding:"2px 6px", background:col.bg, color:col.text, flexShrink:0 }}>{score}</div>
       </div>

@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
 import os
 import uuid
 import json
+from datetime import datetime
 import pdfplumber
 
 from app.services.auth_dependency import get_current_user
@@ -194,7 +195,8 @@ async def upload_cv(
             file_path=file_path,
             text=text,
             ai_analysis=json.dumps(ai_result),
-            user=user
+            user=user,
+            created_at=datetime.utcnow()
         )
         db.add(cv)
         db.commit()
@@ -220,7 +222,8 @@ def get_my_cvs(
     return [
         {
             "file_id": cv.id,
-            "ai_analysis": json.loads(cv.ai_analysis) if cv.ai_analysis else None
+            "ai_analysis": json.loads(cv.ai_analysis) if cv.ai_analysis else None,
+            "created_at": cv.created_at.isoformat() if cv.created_at else None
         }
         for cv in cvs
     ]

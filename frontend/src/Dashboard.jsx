@@ -181,8 +181,9 @@ export default function Dashboard() {
       const data = Array.isArray(res.data) ? res.data : [];
       setCvs(data);
       if (data.length > 0) setSelectedId(data[0].file_id);
-    } catch (_) {
-      setUploadError("Erro ao enviar CV. Tente novamente.");
+    } catch (err) {
+      const msg = err?.response?.data?.detail;
+      setUploadError(msg || "Erro ao enviar CV. Tente novamente.");
     } finally {
       setUploading(false);
     }

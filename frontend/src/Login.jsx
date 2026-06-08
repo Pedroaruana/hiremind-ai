@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://hiremind-ai-tw8s.onrender.com";
@@ -13,6 +13,10 @@ export default function Login() {
   const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [slowWarning, setSlowWarning] = useState(false);
+
+  useEffect(() => {
+    axios.get(`${API_URL}/`).catch(() => {});
+  }, []);
 
   const switchMode = (next) => {
     setMode(next);

@@ -14,8 +14,9 @@ router = APIRouter()
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-MAX_FILE_SIZE_MB = 5
+MAX_FILE_SIZE_MB = 2
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
+MAX_PDF_PAGES = 10
 ALLOWED_CONTENT_TYPES = {"application/pdf"}
 ALLOWED_EXTENSIONS = {".pdf"}
 
@@ -32,7 +33,7 @@ def extract_text_from_pdf(path: str):
     try:
         with pdfplumber.open(path) as pdf:
             text = ""
-            for page in pdf.pages:
+            for page in pdf.pages[:MAX_PDF_PAGES]:
                 page_text = page.extract_text()
                 if page_text:
                     text += page_text

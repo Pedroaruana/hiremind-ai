@@ -15,7 +15,7 @@ export default function Login() {
   const [slowWarning, setSlowWarning] = useState(false);
 
   useEffect(() => {
-    axios.get(`${API_URL}/`).catch(() => {});
+    fetch(`${API_URL}/`, { mode: "no-cors" }).catch(() => {});
   }, []);
 
   const switchMode = (next) => {

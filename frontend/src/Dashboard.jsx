@@ -113,6 +113,14 @@ export default function Dashboard() {
 
   const token = localStorage.getItem("token");
 
+  const username = (() => {
+    try {
+      return JSON.parse(atob(token.split(".")[1])).sub || "";
+    } catch {
+      return "";
+    }
+  })();
+
   const selected = cvs.find((c) => c.file_id === selectedId) || null;
   const analysis = selected ? (selected.ai_analysis || {}) : {};
 
@@ -266,11 +274,23 @@ const subScores = [
           </div>
         )}
 
-        {/* Logout */}
-        <button onClick={handleLogout} style={{ display:"flex", alignItems:"center", gap:"8px", background:"transparent", border:"none", color:"rgba(200,200,240,0.4)", fontSize:"13px", cursor:"pointer", padding:"16px", borderTop:"1px solid rgba(255,255,255,0.06)", width:"100%", fontFamily:"'Sora',sans-serif", marginTop:"auto" }}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          {sidebarOpen && "Sair"}
-        </button>
+        {/* User + Logout */}
+        <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", marginTop:"auto" }}>
+          {sidebarOpen && username && (
+            <div style={{ padding:"12px 16px 0", display:"flex", alignItems:"center", gap:"10px" }}>
+              <div style={{ width:"28px", height:"28px", borderRadius:"50%", background:"linear-gradient(135deg,#8b5cf6,#3b82f6)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"12px", fontWeight:"700", color:"#fff", flexShrink:0 }}>
+                {username.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <p style={{ fontSize:"12px", fontWeight:"600", color:"rgba(200,200,240,0.8)" }}>Olá, {username}</p>
+              </div>
+            </div>
+          )}
+          <button onClick={handleLogout} style={{ display:"flex", alignItems:"center", gap:"8px", background:"transparent", border:"none", color:"rgba(200,200,240,0.4)", fontSize:"13px", cursor:"pointer", padding:"12px 16px", width:"100%", fontFamily:"'Sora',sans-serif" }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            {sidebarOpen && "Sair"}
+          </button>
+        </div>
       </aside>
 
       {/* MAIN */}

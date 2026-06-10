@@ -112,8 +112,9 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const token = localStorage.getItem("token");
+  const isGuest = !token && localStorage.getItem("guest") === "true";
 
-  const username = (() => {
+  const username = isGuest ? "Visitante" : (() => {
     try {
       return JSON.parse(atob(token.split(".")[1])).sub || "";
     } catch {
@@ -135,13 +136,26 @@ export default function Dashboard() {
   const languages = analysis.languages || analysis.idiomas || [];
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    if (isGuest) {
+      localStorage.removeItem("guest");
+      localStorage.removeItem("guest_cvs");
+    } else {
+      localStorage.removeItem("token");
+    }
     window.location.reload();
   };
 
   const handleDelete = async () => {
     if (!selectedId || deleting) return;
     setDeleting(true);
+    if (isGuest) {
+      const updated = cvs.filter((c) => c.file_id !== selectedId);
+      setCvs(updated);
+      setSelectedId(updated.length > 0 ? updated[0].file_id : null);
+      localStorage.setItem("guest_cvs", JSON.stringify(updated));
+      setDeleting(false);
+      return;
+    }
     try {
       await axios.delete(`${API_URL}/cv/${selectedId}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -157,10 +171,19 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    if (!token) {
+    if (isGuest) {
+      try {
+        const stored = JSON.parse(localStorage.getItem("guest_cvs") || "[]");
+        const data = Array.isArray(stored) ? stored : [];
+        setCvs(data);
+        setSelectedId(data.length > 0 ? data[0].file_id : null);
+      } catch {
+        setCvs([]);
+      }
       setLoading(false);
       return;
     }
+    if (!token) { setLoading(false); return; }
     axios
       .get(`${API_URL}/cv/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
@@ -169,10 +192,8 @@ export default function Dashboard() {
         setSelectedId(data.length > 0 ? data[0].file_id : null);
         setLoading(false);
       })
-      .catch((_) => {
-        setLoading(false);
-      });
-  }, [token]);
+      .catch((_) => { setLoading(false); });
+  }, []);
 
   const handleUpload = async (e) => {
     const file = e.target.files && e.target.files[0];
@@ -182,13 +203,28 @@ export default function Dashboard() {
     const fd = new FormData();
     fd.append("file", file);
     try {
-      await axios.post(`${API_URL}/cv/upload-cv`, fd, {
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
-      });
-      const res = await axios.get(`${API_URL}/cv/me`, { headers: { Authorization: `Bearer ${token}` } });
-      const data = Array.isArray(res.data) ? res.data : [];
-      setCvs(data);
-      if (data.length > 0) setSelectedId(data[0].file_id);
+      if (isGuest) {
+        const res = await axios.post(`${API_URL}/cv/analyze-guest`, fd, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        const newCv = {
+          file_id: res.data.file_id,
+          ai_analysis: res.data.ai_analysis,
+          created_at: new Date().toISOString(),
+        };
+        const updated = [newCv, ...cvs];
+        setCvs(updated);
+        setSelectedId(newCv.file_id);
+        localStorage.setItem("guest_cvs", JSON.stringify(updated));
+      } else {
+        await axios.post(`${API_URL}/cv/upload-cv`, fd, {
+          headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+        });
+        const res = await axios.get(`${API_URL}/cv/me`, { headers: { Authorization: `Bearer ${token}` } });
+        const data = Array.isArray(res.data) ? res.data : [];
+        setCvs(data);
+        if (data.length > 0) setSelectedId(data[0].file_id);
+      }
     } catch (err) {
       const msg = err?.response?.data?.detail;
       setUploadError(msg || "Erro ao enviar CV. Tente novamente.");

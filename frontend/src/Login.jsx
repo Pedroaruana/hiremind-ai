@@ -67,6 +67,11 @@ export default function Login() {
     }
   };
 
+  const handleGuest = () => {
+    localStorage.setItem("guest", "true");
+    window.location.href = "/";
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") mode === "login" ? handleLogin() : handleRegister();
   };
@@ -206,6 +211,11 @@ export default function Login() {
               </svg>
             </>
           )}
+        </button>
+
+        {/* Guest access */}
+        <button style={{ ...styles.guestBtn }} onClick={handleGuest}>
+          Entrar como visitante
         </button>
 
         {/* Features strip */}
@@ -427,5 +437,17 @@ const styles = {
   featureDot: {
     width: "6px", height: "6px", borderRadius: "50%",
     background: "linear-gradient(135deg, #8b5cf6, #3b82f6)",
+  },
+  guestBtn: {
+    width: "100%",
+    background: "transparent",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: "12px",
+    color: "rgba(200,200,240,0.5)",
+    fontSize: "13px",
+    fontFamily: "'Sora', sans-serif",
+    padding: "11px",
+    cursor: "pointer",
+    marginBottom: "20px",
   },
 };

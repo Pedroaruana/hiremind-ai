@@ -213,6 +213,40 @@ async def upload_cv(
     }
 
 
+@router.post("/analyze-guest")
+async def analyze_guest(file: UploadFile = File(...)):
+    ext = os.path.splitext(file.filename or "")[-1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Apenas arquivos PDF são aceitos.")
+
+    if file.content_type not in ALLOWED_CONTENT_TYPES:
+        raise HTTPException(status_code=400, detail="Tipo de arquivo inválido. Envie um PDF.")
+
+    content = await file.read()
+
+    if len(content) > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(status_code=400, detail=f"Arquivo muito grande. Máximo: {MAX_FILE_SIZE_MB}MB.")
+
+    file_id = str(uuid.uuid4())
+    file_path = f"{UPLOAD_DIR}/{file_id}.pdf"
+
+    with open(file_path, "wb") as f:
+        f.write(content)
+
+    text = extract_text_from_pdf(file_path)
+    os.remove(file_path)
+
+    if text.startswith("PDF_ERROR"):
+        raise HTTPException(status_code=422, detail="Não foi possível ler o PDF. Verifique o arquivo.")
+
+    ai_result = analyze_cv(text)
+
+    return {
+        "file_id": file_id,
+        "ai_analysis": ai_result
+    }
+
+
 @router.get("/me")
 def get_my_cvs(
     user = Depends(get_current_user),

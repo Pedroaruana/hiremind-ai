@@ -35,6 +35,7 @@ Outro ponto foi a organização do repositório. O frontend estava dentro da pas
 - Score de 0 a 100 com sub-scores de formato, conteúdo e keywords
 - Dicas personalizadas de melhoria
 - Cadastro e login pelo próprio site
+- Acesso como visitante sem criar conta
 
 ## Stack
 
@@ -42,7 +43,7 @@ Outro ponto foi a organização do repositório. O frontend estava dentro da pas
 
 **Frontend:** React, Vite, Axios
 
-**Deploy:** Render (backend) + Vercel (frontend) + Neon (banco)
+**Deploy:** Render (backend) + Vercel (frontend) + Neon (banco) + UptimeRobot (monitoramento)
 
 ## Screenshots
 

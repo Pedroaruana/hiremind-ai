@@ -39,6 +39,6 @@ app.include_router(auth_router)
 app.include_router(cv_router, prefix="/cv", tags=["CV"])
 
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def home():
     return {"message": "HireMind AI API is running"}

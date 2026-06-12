@@ -109,7 +109,7 @@ export default function Dashboard() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [deleting, setDeleting] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
 
   const token = localStorage.getItem("token");
   const isGuest = !token && localStorage.getItem("guest") === "true";
@@ -198,6 +198,10 @@ export default function Dashboard() {
   const handleUpload = async (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
+    if (isGuest && cvs.length >= 10) {
+      setUploadError("Limite de 10 currículos atingido. Delete um antes de enviar outro.");
+      return;
+    }
     setUploading(true);
     setUploadError("");
     const fd = new FormData();
@@ -251,6 +255,14 @@ const subScores = [
         @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
         @keyframes spin{to{transform:rotate(360deg)}}
         @keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+        @media(max-width:768px){
+          .dash-main{padding:16px 14px!important;}
+          .grid-score{grid-template-columns:1fr!important;}
+          .grid-skills{grid-template-columns:1fr!important;}
+          .grid-exp{grid-template-columns:1fr!important;}
+          .cv-header{flex-wrap:wrap;gap:10px!important;}
+          .cv-header h1{font-size:18px!important;}
+        }
       `}</style>
 
       {/* SIDEBAR */}
@@ -330,7 +342,7 @@ const subScores = [
       </aside>
 
       {/* MAIN */}
-      <main style={{ flex:1, overflowY:"auto", padding:"28px 32px", maxHeight:"100vh" }}>
+      <main className="dash-main" style={{ flex:1, overflowY:"auto", padding:"28px 32px", maxHeight:"100vh" }}>
         {!selected && !loading && (
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", minHeight:"60vh", textAlign:"center" }}>
             <div style={{ width:"80px", height:"80px", borderRadius:"20px", background:"rgba(139,92,246,0.08)", border:"1px solid rgba(139,92,246,0.2)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:"20px" }}>
@@ -344,7 +356,7 @@ const subScores = [
         {selected && (
           <div style={{ animation:"fadeUp 0.4s ease both" }}>
             {/* Header */}
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"24px" }}>
+            <div className="cv-header" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"24px" }}>
               <div style={{ display:"flex", alignItems:"center", gap:"14px" }}>
                 <div style={{ width:"48px", height:"48px", borderRadius:"14px", background:"linear-gradient(135deg,#8b5cf6,#3b82f6)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"20px", fontWeight:"700", color:"#fff" }}>
                   {name.charAt(0).toUpperCase()}
@@ -366,7 +378,7 @@ const subScores = [
             </div>
 
             {/* Score + Summary */}
-            <div style={{ display:"grid", gridTemplateColumns:"260px 1fr", gap:"16px", marginBottom:"16px" }}>
+            <div className="grid-score" style={{ display:"grid", gridTemplateColumns:"260px 1fr", gap:"16px", marginBottom:"16px" }}>
 
               {/* Score card */}
               <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"16px", padding:"20px" }}>
@@ -417,7 +429,7 @@ const subScores = [
             </div>
 
             {/* Skills + Tips */}
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"16px", marginBottom:"16px" }}>
+            <div className="grid-skills" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"16px", marginBottom:"16px" }}>
 
               <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"16px", padding:"20px" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:"8px", marginBottom:"14px" }}>
@@ -446,7 +458,7 @@ const subScores = [
 
             {/* Experience + Education */}
             {(experience.length > 0 || education.length > 0) && (
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"16px" }}>
+              <div className="grid-exp" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"16px" }}>
                 {experience.length > 0 && (
                   <div style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.08)", borderRadius:"16px", padding:"20px" }}>
                     <p style={{ fontSize:"10px", fontWeight:"700", letterSpacing:"1px", color:"rgba(200,200,240,0.4)", textTransform:"uppercase", marginBottom:"14px" }}>Experiência</p>

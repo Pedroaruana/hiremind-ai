@@ -17,6 +17,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 MAX_FILE_SIZE_MB = 2
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 MAX_PDF_PAGES = 10
+MAX_CVS_PER_USER = 10
 ALLOWED_CONTENT_TYPES = {"application/pdf"}
 ALLOWED_EXTENSIONS = {".pdf"}
 
@@ -161,6 +162,10 @@ async def upload_cv(
     user = Depends(get_current_user),
     db = Depends(get_db)
 ):
+    count = db.query(CV).filter(CV.user == user).count()
+    if count >= MAX_CVS_PER_USER:
+        raise HTTPException(status_code=400, detail="Limite de 10 currículos atingido. Delete um antes de enviar outro.")
+
     # Validação de extensão
     ext = os.path.splitext(file.filename or "")[-1].lower()
     if ext not in ALLOWED_EXTENSIONS:
@@ -252,7 +257,7 @@ def get_my_cvs(
     user = Depends(get_current_user),
     db = Depends(get_db)
 ):
-    cvs = db.query(CV).filter(CV.user == user).all()
+    cvs = db.query(CV).filter(CV.user == user).order_by(CV.created_at.desc()).all()
 
     return [
         {

@@ -143,6 +143,14 @@ def analyze_cv(text: str):
     has_projects = any(k in text_lower for k in ["projeto", "project", "portfólio", "portfolio", "app", "sistema", "desenvolveu", "criou"])
     if not has_projects:
         tips.append("Adicione projetos pessoais ou link do portfólio para destacar experiência prática.")
+
+    if level == "Júnior":
+        tips.append("Plataformas como Rocketseat, Alura e DIO têm trilhas completas para dev iniciante — vale muito investir.")
+    elif level == "Pleno":
+        tips.append("Certificações como AWS Cloud Practitioner ou Google Associate Cloud Engineer valorizam bastante o perfil de Pleno.")
+    else:
+        tips.append("Contribuir para projetos open source no GitHub é um diferencial forte para perfis Sênior.")
+
     if not tips:
         tips.append("Currículo bem estruturado! Mantenha-o atualizado regularmente.")
 

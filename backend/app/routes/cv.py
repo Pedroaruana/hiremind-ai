@@ -151,6 +151,9 @@ def analyze_cv(text: str):
     else:
         tips.append("Contribuir para projetos open source no GitHub é um diferencial forte para perfis Sênior.")
 
+    tips.append("Personalize o currículo para cada vaga destacando as habilidades mais relevantes para aquela empresa.")
+    tips.append("Atualize seu currículo a cada 3-6 meses para refletir novas experiências e tecnologias aprendidas.")
+
     if not tips:
         tips.append("Currículo bem estruturado! Mantenha-o atualizado regularmente.")
 

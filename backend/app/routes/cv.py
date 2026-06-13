@@ -140,6 +140,9 @@ def analyze_cv(text: str):
         tips.append("Adicione o link do seu GitHub para mostrar projetos práticos.")
     if len(text) < 500:
         tips.append("Seu currículo parece muito curto. Adicione mais detalhes sobre experiências.")
+    has_projects = any(k in text_lower for k in ["projeto", "project", "portfólio", "portfolio", "app", "sistema", "desenvolveu", "criou"])
+    if not has_projects:
+        tips.append("Adicione projetos pessoais ou link do portfólio para destacar experiência prática.")
     if not tips:
         tips.append("Currículo bem estruturado! Mantenha-o atualizado regularmente.")
 

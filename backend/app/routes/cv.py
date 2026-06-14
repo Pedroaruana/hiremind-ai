@@ -151,6 +151,10 @@ def analyze_cv(text: str):
     else:
         tips.append("Contribuir para projetos open source no GitHub é um diferencial forte para perfis Sênior.")
 
+    has_languages = any(k in text_lower for k in ["inglês", "ingles", "english", "espanhol", "spanish", "francês", "frances", "idioma", "language", "fluente", "intermediário", "basico", "básico"])
+    if not has_languages:
+        tips.append("Adicione os idiomas que você fala e o nível de fluência — inglês especialmente faz diferença.")
+
     tips.append("Personalize o currículo para cada vaga destacando as habilidades mais relevantes para aquela empresa.")
     tips.append("Atualize seu currículo a cada 3-6 meses para refletir novas experiências e tecnologias aprendidas.")
 

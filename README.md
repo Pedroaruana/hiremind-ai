@@ -7,6 +7,7 @@ Sistema que analisa currículos automaticamente usando IA — faz upload do PDF,
 ![React](https://img.shields.io/badge/React-Vite-61DAFB?style=flat-square&logo=react)
 ![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat-square&logo=render)
 ![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat-square&logo=vercel)
+![Uptime](https://img.shields.io/badge/Uptime-monitored-brightgreen?style=flat-square&logo=uptimerobot)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
 **Acesse:** https://hiremind-ai-fawn.vercel.app
@@ -27,15 +28,28 @@ Decidi refazer isso do zero no frontend: criei as telas de login e cadastro em R
 
 Outro ponto foi a organização do repositório. O frontend estava dentro da pasta `backend/`, o que não fazia sentido nenhum. Reestruturei tudo com `frontend/` e `backend/` separados na raiz, o que deixou o projeto muito mais legível.
 
+## Como usar
+
+A forma mais rápida de testar sem criar conta:
+
+1. Acesse https://hiremind-ai-fawn.vercel.app
+2. Clique em **Entrar como visitante**
+3. Clique em **Enviar CV** e selecione um PDF
+4. Veja o score, habilidades detectadas e dicas de melhoria
+
+Para salvar seus CVs permanentemente, crie uma conta gratuita em **Criar conta**.
+
+> O servidor pode levar até 50 segundos para acordar no primeiro acesso do dia — é comportamento normal do plano gratuito do Render.
+
 ## Funcionalidades
 
 - Upload de currículos em PDF
 - Extração automática de habilidades técnicas
 - Classificação por nível (Júnior, Pleno, Sênior)
 - Score de 0 a 100 com sub-scores de formato, conteúdo e keywords
-- Dicas personalizadas de melhoria
+- Dicas personalizadas de melhoria por nível
 - Cadastro e login pelo próprio site
-- Acesso como visitante sem criar conta
+- Acesso como visitante sem criar conta (dados salvos localmente)
 
 ## Stack
 
@@ -48,13 +62,10 @@ Outro ponto foi a organização do repositório. O frontend estava dentro da pas
 ## Screenshots
 
 ### Login
-![Login](./frontend/screenshots/login2.png)
+![Login](./frontend/screenshots/login.png)
 
 ### Dashboard
-![Dashboard](./frontend/screenshots/dashboard.png)
-
-### Análise de Currículo
-![CV Analysis](./frontend/screenshots/curriculo.png)
+![Dashboard](./frontend/screenshots/dashboardd.png)
 
 ## Como rodar localmente
 
@@ -88,6 +99,10 @@ hiremind-ai/
 │   └── requirements.txt
 └── render.yaml
 ```
+
+## Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 

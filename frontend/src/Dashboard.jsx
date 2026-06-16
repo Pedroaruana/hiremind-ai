@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import jsPDF from "jspdf";
 
 const API_URL = import.meta.env.VITE_API_URL || "https://hiremind-ai-tw8s.onrender.com";
 
@@ -168,6 +169,190 @@ export default function Dashboard() {
     } finally {
       setDeleting(false);
     }
+  };
+
+  const handleExportPDF = () => {
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const W = 210;
+    const mg = 20;
+    const cW = W - mg * 2;
+    let y = 0;
+
+    // Header
+    doc.setFillColor(15, 12, 41);
+    doc.rect(0, 0, W, 40, "F");
+    doc.setFillColor(139, 92, 246);
+    doc.rect(0, 0, 5, 40, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.setTextColor(255, 255, 255);
+    doc.text("HireMind AI", 14, 16);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(160, 160, 200);
+    doc.text("Relatório de Análise de Currículo", 14, 24);
+    const dateStr = new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+    doc.setFontSize(8);
+    doc.text(dateStr, W - mg, 24, { align: "right" });
+
+    y = 52;
+
+    // Candidate
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(20, 20, 40);
+    doc.text(name, mg, y);
+    y += 8;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(11);
+    doc.setTextColor(100, 100, 130);
+    doc.text(role, mg, y);
+    y += 7;
+
+    // Level badge
+    const lvl = analysis.level || "Júnior";
+    const lvlCol = lvl === "Sênior" ? [16, 185, 129] : lvl === "Pleno" ? [245, 158, 11] : [139, 92, 246];
+    doc.setFillColor(...lvlCol);
+    doc.rect(mg, y, 42, 6, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`Nível: ${lvl}`, mg + 21, y + 4, { align: "center" });
+    y += 14;
+
+    // Divider
+    doc.setDrawColor(210, 210, 230);
+    doc.setLineWidth(0.3);
+    doc.line(mg, y, W - mg, y);
+    y += 8;
+
+    // Score
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(100, 80, 160);
+    doc.text("SCORE GERAL", mg, y);
+    y += 7;
+
+    const scoreCol3 = score >= 80 ? [16, 185, 129] : score >= 60 ? [245, 158, 11] : [239, 68, 68];
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(30);
+    doc.setTextColor(...scoreCol3);
+    doc.text(`${score}`, mg, y + 8);
+    const scoreNumW = doc.getTextWidth(`${score}`);
+    doc.setFontSize(13);
+    doc.setTextColor(150, 150, 180);
+    doc.text("/100", mg + scoreNumW + 1, y + 8);
+    doc.setFontSize(10);
+    doc.setTextColor(...scoreCol3);
+    doc.text(scoreLabel(score), mg, y + 15);
+
+    // Sub-score bars
+    const bx = mg + 60;
+    const bw = cW - 62;
+    subScores.forEach(({ label, v }, idx) => {
+      const by = y + idx * 11;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(80, 80, 100);
+      doc.text(label, bx, by + 4);
+      doc.setFillColor(220, 220, 235);
+      doc.rect(bx + 22, by, bw - 30, 3.5, "F");
+      const bc = v >= 80 ? [16, 185, 129] : v >= 60 ? [245, 158, 11] : [239, 68, 68];
+      doc.setFillColor(...bc);
+      doc.rect(bx + 22, by, (bw - 30) * v / 100, 3.5, "F");
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(...bc);
+      doc.text(`${v}`, W - mg, by + 4, { align: "right" });
+    });
+
+    y += 40;
+
+    doc.setDrawColor(210, 210, 230);
+    doc.line(mg, y, W - mg, y);
+    y += 8;
+
+    // Summary
+    if (summary) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(100, 80, 160);
+      doc.text("RESUMO", mg, y);
+      y += 6;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(60, 60, 80);
+      const lines = doc.splitTextToSize(summary, cW);
+      doc.text(lines, mg, y);
+      y += lines.length * 5 + 8;
+      doc.setDrawColor(210, 210, 230);
+      doc.line(mg, y, W - mg, y);
+      y += 8;
+    }
+
+    // Skills
+    if (skills.length > 0) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(100, 80, 160);
+      doc.text(`HABILIDADES (${skills.length})`, mg, y);
+      y += 6;
+      let cx = mg;
+      const chipH = 6;
+      skills.forEach((sk) => {
+        doc.setFontSize(8);
+        const tw = doc.getTextWidth(sk) + 8;
+        if (cx + tw > W - mg) { cx = mg; y += chipH + 3; }
+        doc.setFillColor(230, 220, 255);
+        doc.rect(cx, y, tw, chipH, "F");
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(100, 60, 180);
+        doc.text(sk, cx + 4, y + 4.2);
+        cx += tw + 3;
+      });
+      y += chipH + 10;
+      doc.setDrawColor(210, 210, 230);
+      doc.line(mg, y, W - mg, y);
+      y += 8;
+    }
+
+    // Tips
+    if (tips.length > 0) {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(100, 80, 160);
+      doc.text("DICAS DE MELHORIA", mg, y);
+      y += 6;
+      tips.forEach((tip) => {
+        const tipText = typeof tip === "object" ? (tip.text || tip.dica || "") : tip;
+        if (y > 265) { doc.addPage(); y = 20; }
+        doc.setFillColor(245, 158, 11);
+        doc.rect(mg, y + 0.5, 2, 2, "F");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(60, 60, 80);
+        const tipLines = doc.splitTextToSize(tipText, cW - 8);
+        doc.text(tipLines, mg + 6, y + 2.5);
+        y += tipLines.length * 4.5 + 4;
+      });
+    }
+
+    // Footer
+    const pages = doc.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) {
+      doc.setPage(i);
+      doc.setDrawColor(200, 200, 220);
+      doc.setLineWidth(0.2);
+      doc.line(mg, 285, W - mg, 285);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      doc.setTextColor(160, 160, 190);
+      doc.text("Gerado por HireMind AI · hiremind-ai-fawn.vercel.app", mg, 290);
+      doc.text(`Página ${i}/${pages}`, W - mg, 290, { align: "right" });
+    }
+
+    const safeName = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    doc.save(`analise-${safeName}.pdf`);
   };
 
   useEffect(() => {
@@ -366,15 +551,25 @@ const subScores = [
                   <p style={{ fontSize:"13px", color:"rgba(200,200,240,0.5)", marginTop:"2px" }}>{role}</p>
                 </div>
               </div>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                title="Deletar currículo"
-                style={{ display:"flex", alignItems:"center", gap:"6px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.2)", borderRadius:"8px", color:"rgba(239,68,68,0.7)", fontSize:"12px", padding:"7px 12px", cursor: deleting ? "not-allowed" : "pointer", opacity: deleting ? 0.5 : 1, fontFamily:"'Sora',sans-serif" }}
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                {deleting ? "Deletando..." : "Deletar"}
-              </button>
+              <div style={{ display:"flex", gap:"8px" }}>
+                <button
+                  onClick={handleExportPDF}
+                  title="Exportar análise em PDF"
+                  style={{ display:"flex", alignItems:"center", gap:"6px", background:"rgba(139,92,246,0.08)", border:"1px solid rgba(139,92,246,0.2)", borderRadius:"8px", color:"rgba(139,92,246,0.85)", fontSize:"12px", padding:"7px 12px", cursor:"pointer", fontFamily:"'Sora',sans-serif" }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  Exportar PDF
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  title="Deletar currículo"
+                  style={{ display:"flex", alignItems:"center", gap:"6px", background:"rgba(239,68,68,0.08)", border:"1px solid rgba(239,68,68,0.2)", borderRadius:"8px", color:"rgba(239,68,68,0.7)", fontSize:"12px", padding:"7px 12px", cursor: deleting ? "not-allowed" : "pointer", opacity: deleting ? 0.5 : 1, fontFamily:"'Sora',sans-serif" }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  {deleting ? "Deletando..." : "Deletar"}
+                </button>
+              </div>
             </div>
 
             {/* Score + Summary */}

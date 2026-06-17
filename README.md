@@ -5,7 +5,7 @@ Sistema que analisa currículos automaticamente usando IA — faz upload do PDF,
 ![Python](https://img.shields.io/badge/Python-3.13-blue?style=flat-square&logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688?style=flat-square&logo=fastapi)
 ![React](https://img.shields.io/badge/React-Vite-61DAFB?style=flat-square&logo=react)
-![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat-square&logo=render)
+![HuggingFace](https://img.shields.io/badge/Backend-Hugging%20Face-FFD21E?style=flat-square&logo=huggingface&logoColor=black)
 ![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat-square&logo=vercel)
 ![Uptime](https://img.shields.io/badge/Uptime-monitored-brightgreen?style=flat-square&logo=uptimerobot)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
@@ -39,7 +39,7 @@ A forma mais rápida de testar sem criar conta:
 
 Para salvar seus CVs permanentemente, crie uma conta gratuita em **Criar conta**.
 
-> O servidor pode levar até 50 segundos para acordar no primeiro acesso do dia — é comportamento normal do plano gratuito do Render.
+> O backend roda em container no Hugging Face Spaces e fica no ar continuamente, sem sleep.
 
 ## Funcionalidades
 
@@ -57,7 +57,7 @@ Para salvar seus CVs permanentemente, crie uma conta gratuita em **Criar conta**
 
 **Frontend:** React, Vite, Axios
 
-**Deploy:** Render (backend) + Vercel (frontend) + Neon (banco) + UptimeRobot (monitoramento)
+**Deploy:** Hugging Face Spaces (backend) + Vercel (frontend) + Neon (banco) + UptimeRobot (monitoramento)
 
 ## Screenshots
 

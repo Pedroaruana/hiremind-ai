@@ -287,6 +287,32 @@ def get_my_cvs(
     ]
 
 
+@router.get("/stats")
+def get_stats(
+    user = Depends(get_current_user),
+    db = Depends(get_db)
+):
+    cvs = db.query(CV).filter(CV.user == user).all()
+    if not cvs:
+        return {"total": 0, "average_score": 0, "best_score": 0}
+
+    scores = []
+    for cv in cvs:
+        try:
+            analysis = json.loads(cv.ai_analysis) if cv.ai_analysis else {}
+            score = analysis.get("score")
+            if isinstance(score, (int, float)):
+                scores.append(score)
+        except Exception:
+            pass
+
+    total = len(cvs)
+    best_score = max(scores) if scores else 0
+    average_score = round(sum(scores) / len(scores)) if scores else 0
+
+    return {"total": total, "average_score": average_score, "best_score": best_score}
+
+
 @router.delete("/{file_id}")
 def delete_cv(
     file_id: str,

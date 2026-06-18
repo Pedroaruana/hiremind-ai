@@ -50,12 +50,14 @@ Para salvar seus CVs permanentemente, crie uma conta gratuita em **Criar conta**
 - Dicas personalizadas de melhoria por nível
 - Cadastro e login pelo próprio site
 - Acesso como visitante sem criar conta (dados salvos localmente)
+- Exportar análise completa em PDF
+- Card de estatísticas com total de CVs, score médio e melhor score
 
 ## Stack
 
 **Backend:** Python, FastAPI, SQLAlchemy, PostgreSQL, JWT (python-jose), bcrypt, pdfplumber
 
-**Frontend:** React, Vite, Axios
+**Frontend:** React, Vite, Axios, jsPDF
 
 **Deploy:** Hugging Face Spaces (backend) + Vercel (frontend) + Neon (banco) + UptimeRobot (monitoramento)
 
@@ -97,7 +99,7 @@ hiremind-ai/
 ├── backend/         # FastAPI
 │   ├── app/
 │   └── requirements.txt
-└── render.yaml
+└── Dockerfile
 ```
 
 ## Licença

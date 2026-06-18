@@ -2,7 +2,9 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from passlib.context import CryptContext
+from datetime import datetime
 from app.services.jwt_service import create_access_token
+from app.services.auth_dependency import get_current_user
 from app.database.connection import SessionLocal
 from app.models.user_model import User
 
@@ -37,7 +39,7 @@ def register(body: RegisterRequest, db=Depends(get_db)):
     if existing:
         raise HTTPException(status_code=400, detail="Usuário já existe.")
     hashed = pwd_context.hash(body.password)
-    user = User(username=body.username, password=hashed)
+    user = User(username=body.username, password=hashed, created_at=datetime.utcnow())
     db.add(user)
     db.commit()
     return {"message": "Usuário criado com sucesso."}
@@ -50,3 +52,14 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db=Depends(get_db)):
         raise HTTPException(status_code=401, detail="Usuário ou senha inválidos.")
     token = create_access_token({"sub": user.username})
     return {"access_token": token, "token_type": "bearer"}
+
+
+@router.get("/auth/me")
+def get_me(username: str = Depends(get_current_user), db=Depends(get_db)):
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+    return {
+        "username": user.username,
+        "created_at": user.created_at.isoformat() if user.created_at else None,
+    }

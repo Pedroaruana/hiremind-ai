@@ -422,6 +422,16 @@ export default function Dashboard() {
     }
   };
 
+  const statsData = (() => {
+    if (cvs.length === 0) return null;
+    const scores = cvs.map(c => (c.ai_analysis || {}).score || 0).filter(s => s > 0);
+    return {
+      total: cvs.length,
+      average: scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0,
+      best: scores.length ? Math.max(...scores) : 0,
+    };
+  })();
+
   // Por isso:
 const subScores = [
   { label: "Formato",   v: analysis.format_score  ?? Math.min(100, score + 8) },
@@ -528,6 +538,26 @@ const subScores = [
 
       {/* MAIN */}
       <main className="dash-main" style={{ flex:1, overflowY:"auto", padding:"28px 32px", maxHeight:"100vh" }}>
+
+        {/* Stats bar */}
+        {statsData && (
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"12px", marginBottom:"24px" }}>
+            {[
+              { label:"CVs Analisados", value: statsData.total, color:"#a78bfa", icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="1.8"/><path d="M14 2v6h6M16 13H8M16 17H8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg> },
+              { label:"Score Médio",    value: `${statsData.average}/100`, color:"#fbbf24", icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8"/><path d="M12 8v4l3 3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg> },
+              { label:"Melhor Score",  value: `${statsData.best}/100`,    color:"#34d399", icon:<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" strokeWidth="1.8" fill="none"/></svg> },
+            ].map(({ label, value, color, icon }) => (
+              <div key={label} style={{ background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:"14px", padding:"16px 18px", display:"flex", alignItems:"center", gap:"14px" }}>
+                <div style={{ color, flexShrink:0 }}>{icon}</div>
+                <div>
+                  <div style={{ fontSize:"18px", fontWeight:"700", color, lineHeight:1 }}>{value}</div>
+                  <div style={{ fontSize:"11px", color:"rgba(200,200,240,0.4)", marginTop:"4px" }}>{label}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {!selected && !loading && (
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", minHeight:"60vh", textAlign:"center" }}>
             <div style={{ width:"80px", height:"80px", borderRadius:"20px", background:"rgba(139,92,246,0.08)", border:"1px solid rgba(139,92,246,0.2)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:"20px" }}>

@@ -1,0 +1,25 @@
+name: Keep HireMind API Alive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check-and-restart:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check API health
+        id: check
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 https://pedroaruana-hiremind-api.hf.space/ || echo "000")
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          echo "API respondeu com status: $STATUS"
+
+      - name: Restart Space if down
+        if: steps.check.outputs.status != '200'
+        run: |
+          echo "API fora do ar, reiniciando o Space..."
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.HF_TOKEN }}" \
+            "https://huggingface.co/api/spaces/PedroAruana/hiremind-api/restart"

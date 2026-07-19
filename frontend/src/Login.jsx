@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-
-const API_URL = import.meta.env.VITE_API_URL || "https://hiremind-ai-tw8s.onrender.com";
+import { apiRequest, prewarm } from "./apiClient";
 
 export default function Login() {
   const [mode, setMode] = useState("login"); // "login" | "register"
@@ -15,7 +13,7 @@ export default function Login() {
   const [slowWarning, setSlowWarning] = useState(false);
 
   useEffect(() => {
-    fetch(`${API_URL}/`, { mode: "no-cors" }).catch(() => {});
+    prewarm();
   }, []);
 
   const switchMode = (next) => {
@@ -34,7 +32,7 @@ export default function Login() {
     setSlowWarning(false);
     const slowTimer = setTimeout(() => setSlowWarning(true), 5000);
     try {
-      const res = await axios.post(`${API_URL}/login`, new URLSearchParams({ username, password }));
+      const res = await apiRequest({ method: "post", url: "/login", data: new URLSearchParams({ username, password }) });
       const token = res.data?.access_token;
       if (!token) { setError("Erro: token não recebido do servidor."); return; }
       localStorage.setItem("token", token);
@@ -56,7 +54,7 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      await axios.post(`${API_URL}/register`, { username, password });
+      await apiRequest({ method: "post", url: "/register", data: { username, password } });
       setSuccess("Conta criada! Faça login para continuar.");
       switchMode("login");
     } catch (err) {

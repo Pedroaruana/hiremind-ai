@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import jsPDF from "jspdf";
-
-const API_URL = import.meta.env.VITE_API_URL || "https://hiremind-ai-tw8s.onrender.com";
+import { apiRequest } from "./apiClient";
 
 const SKILL_WIDTHS = [90, 75, 82, 68, 95, 71, 85, 78, 65, 88];
 const SKILL_COLORS = ["#8b5cf6","#3b82f6","#10b981","#f59e0b","#ec4899","#06b6d4"];
@@ -158,7 +156,9 @@ export default function Dashboard() {
       return;
     }
     try {
-      await axios.delete(`${API_URL}/cv/${selectedId}`, {
+      await apiRequest({
+        method: "delete",
+        url: `/cv/${selectedId}`,
         headers: { Authorization: `Bearer ${token}` },
       });
       const updated = cvs.filter((c) => c.file_id !== selectedId);
@@ -369,8 +369,7 @@ export default function Dashboard() {
       return;
     }
     if (!token) { setLoading(false); return; }
-    axios
-      .get(`${API_URL}/cv/me`, { headers: { Authorization: `Bearer ${token}` } })
+    apiRequest({ method: "get", url: "/cv/me", headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         const data = Array.isArray(res.data) ? res.data : [];
         setCvs(data);
@@ -393,7 +392,10 @@ export default function Dashboard() {
     fd.append("file", file);
     try {
       if (isGuest) {
-        const res = await axios.post(`${API_URL}/cv/analyze-guest`, fd, {
+        const res = await apiRequest({
+          method: "post",
+          url: "/cv/analyze-guest",
+          data: fd,
           headers: { "Content-Type": "multipart/form-data" },
         });
         const newCv = {
@@ -406,10 +408,13 @@ export default function Dashboard() {
         setSelectedId(newCv.file_id);
         localStorage.setItem("guest_cvs", JSON.stringify(updated));
       } else {
-        await axios.post(`${API_URL}/cv/upload-cv`, fd, {
+        await apiRequest({
+          method: "post",
+          url: "/cv/upload-cv",
+          data: fd,
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
         });
-        const res = await axios.get(`${API_URL}/cv/me`, { headers: { Authorization: `Bearer ${token}` } });
+        const res = await apiRequest({ method: "get", url: "/cv/me", headers: { Authorization: `Bearer ${token}` } });
         const data = Array.isArray(res.data) ? res.data : [];
         setCvs(data);
         if (data.length > 0) setSelectedId(data[0].file_id);
